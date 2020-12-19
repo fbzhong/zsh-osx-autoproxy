@@ -51,10 +51,14 @@ proxy () {
 
     export rsync_proxy="${all_proxy}"
     export RSYNC_PROXY="${all_proxy}"
+
+    export socat_proxy="proxy:${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_SERVER}"
+    export socat_proxy_port="proxyport=${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_PORT}"
+    export GIT_PROXY_COMMAND="${0:A:h}/socat-wrapper.sh"
 }
 
 noproxy () {
-    unset {http,https,ftp,rsync,all}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY
+    unset {http,https,ftp,rsync,all}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port}
 }
 
 # enable proxy env by default.

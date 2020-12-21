@@ -54,11 +54,15 @@ proxy () {
 
     export socat_proxy="proxy:${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_SERVER}"
     export socat_proxy_port="proxyport=${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_PORT}"
-    export GIT_PROXY_COMMAND="${0:A:h}/socat-wrapper.sh"
+
+    export SOCAT_PROXY="${socat_proxy}"
+    export SOCAT_PROXY_PORT="${socat_proxy_port}"
+
+    export GIT_PROXY_COMMAND="${HOME}/.oh-my-zsh/custom/plugins/zsh-osx-autoproxy/socat-wrapper.sh"
 }
 
 noproxy () {
-    unset {http,https,ftp,rsync,all}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port}
+    unset {http,https,ftp,rsync,all,}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port} SOCAT_PROXY{,_PORT} GIT_PROXY_COMMAND
 }
 
 # enable proxy env by default.

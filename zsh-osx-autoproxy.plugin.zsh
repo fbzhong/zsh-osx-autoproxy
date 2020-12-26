@@ -39,15 +39,16 @@ proxy () {
         export FTP_PROXY="${ftp_proxy}"
     fi
     # all_proxy
-    if (( $__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_ENABLED )); then
-        __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSProxy : }[(f)1]}
-        __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSPort : }[(f)1]}
-        export all_proxy="socks5://${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT}"
-        export ALL_PROXY="${all_proxy}"
-    elif (( $__ZSH_OSX_AUTOPROXY_HTTP_PROXY_ENABLED )); then
+    # disable socks proxy for all_proxy env.
+    # if (( $__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_ENABLED )); then
+        # __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSProxy : }[(f)1]}
+        # __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSPort : }[(f)1]}
+        # export all_proxy="socks5://${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT}"
+        # export ALL_PROXY="${all_proxy}"
+    # elif (( $__ZSH_OSX_AUTOPROXY_HTTP_PROXY_ENABLED )); then
         export all_proxy="${http_proxy}"
         export ALL_PROXY="${all_proxy}"
-    fi
+    # fi
 
     export rsync_proxy="${all_proxy}"
     export RSYNC_PROXY="${all_proxy}"

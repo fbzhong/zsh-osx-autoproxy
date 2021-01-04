@@ -23,6 +23,7 @@ proxy () {
         __ZSH_OSX_AUTOPROXY_HTTP_PROXY_PORT=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*HTTPPort : }[(f)1]}
         export http_proxy="http://${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_PORT}"
         export HTTP_PROXY="${http_proxy}"
+        export http_proxy_address="${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_PORT}"
     fi
     # https_proxy
     if (( $__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_ENABLED )); then
@@ -50,8 +51,8 @@ proxy () {
         export ALL_PROXY="${all_proxy}"
     # fi
 
-    export rsync_proxy="${all_proxy}"
-    export RSYNC_PROXY="${all_proxy}"
+    export rsync_proxy="${http_proxy_address}"
+    export RSYNC_PROXY="${http_proxy_address}"
 
     export socat_proxy="proxy:${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_SERVER}"
     export socat_proxy_port="proxyport=${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_PORT}"
@@ -63,7 +64,7 @@ proxy () {
 }
 
 noproxy () {
-    unset {http,https,ftp,rsync,all,}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port} SOCAT_PROXY{,_PORT} GIT_PROXY_COMMAND
+    unset {http,https,ftp,rsync,all,}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port} SOCAT_PROXY{,_PORT} GIT_PROXY_COMMAND http_proxy_address
 }
 
 # enable proxy env by default.

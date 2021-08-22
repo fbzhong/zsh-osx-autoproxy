@@ -64,7 +64,7 @@ proxy () {
         export SOCAT_PROXY="${socat_proxy}"
         export SOCAT_PROXY_PORT="${socat_proxy_port}"
 
-        export GIT_PROXY_COMMAND="${HOME}/.oh-my-zsh/custom/plugins/zsh-osx-autoproxy/socat-wrapper.sh"
+        export GIT_PROXY_COMMAND="${0:a:h}/socat-wrapper.sh"
     fi
 }
 

@@ -2,6 +2,9 @@
 # Auto configure zsh proxy env based on system preferences
 # Sukka (https://skk.moe)
 
+
+SOCAT_PROXY_WRAPPER="${0:a:h}/socat-wrapper.sh"
+
 proxy () {
     # Cache the output of scutil --proxy
     __ZSH_OSX_AUTOPROXY_SCUTIL_PROXY=$(scutil --proxy)
@@ -64,7 +67,7 @@ proxy () {
         export SOCAT_PROXY="${socat_proxy}"
         export SOCAT_PROXY_PORT="${socat_proxy_port}"
 
-        export GIT_PROXY_COMMAND="${0:a:h}/socat-wrapper.sh"
+        export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
     fi
 }
 

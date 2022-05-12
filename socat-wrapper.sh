@@ -1,9 +1,9 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/local/bin:/opt/local/bin:/opt/homebrew/bin
+export PATH=$PATH:/opt/homebrew/bin:/opt/local/bin
 
-if [[ $1 == 10.* ]] || [[ $1 == 192.168.* ]] || [ "${SOCAT_PROXY:-$socat_proxy}" == "" ] || [ "${SOCAT_PROXY:-$socat_proxy}" == "proxy:" ]; then
-    socat - tcp-connect:$1:$2
+if [[ $1 == 10.* ]] || [[ $1 == 192.168.* ]] || [ "${SOCAT_PROXY:-$socat_proxy}" == "" ] || [ "${SOCAT_PROXY:-$socat_proxy}" == "PROXY:" ]; then
+    socat - TCP-CONNECT:$1:$2
 else
-    socat - ${SOCAT_PROXY:-$socat_proxy}:$1:$2,${SOCAT_PROXY_PORT:-$socat_proxy_port}
+    socat - ${SOCAT_PROXY:-$socat_proxy}:$1:$2,${SOCAT_PROXY_PORT:-$socat_proxy_port},retry=3
 fi

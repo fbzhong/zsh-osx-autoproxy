@@ -61,7 +61,7 @@ proxy () {
         export rsync_proxy="${http_proxy_address}"
         export RSYNC_PROXY="${http_proxy_address}"
 
-        export socat_proxy="proxy:${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_SERVER}"
+        export socat_proxy="PROXY:${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_SERVER}"
         export socat_proxy_port="proxyport=${__ZSH_OSX_AUTOPROXY_HTTPS_PROXY_PORT}"
 
         export SOCAT_PROXY="${socat_proxy}"

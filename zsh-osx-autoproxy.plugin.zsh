@@ -41,6 +41,13 @@ proxy () {
         export ftp_proxy="http://${__ZSH_OSX_AUTOPROXY_FTP_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_FTP_PROXY_PORT}"
         export FTP_PROXY="${ftp_proxy}"
     fi
+    # socks_proxy
+    if (( $__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_ENABLED )); then
+        __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSProxy : }[(f)1]}
+        __ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT=${${__ZSH_OSX_AUTOPROXY_SCUTIL_PROXY#*SOCKSPort : }[(f)1]}
+        export socks_proxy="socks4://${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT}"
+        export SOCKS_PROXY="${socks_proxy}"
+    fi
 
     if (( $__ZSH_OSX_AUTOPROXY_HTTP_PROXY_ENABLED )); then
         http_proxy_address="${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_SERVER}:${__ZSH_OSX_AUTOPROXY_HTTP_PROXY_PORT}"
@@ -69,10 +76,20 @@ proxy () {
 
         export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
     fi
+
+    if (( $__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_ENABLED )); then
+        export socat_proxy="SOCKS4A:${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_SERVER}"
+        export socat_proxy_port="socksport=${__ZSH_OSX_AUTOPROXY_SOCKS_PROXY_PORT}"
+
+        export SOCAT_PROXY="${socat_proxy}"
+        export SOCAT_PROXY_PORT="${socat_proxy_port}"
+
+        export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
+    fi
 }
 
 noproxy () {
-    unset {http,https,ftp,rsync,all,}_proxy {HTTP,HTTPS,FTP,RSYNC,ALL}_PROXY socat_proxy{,_port} SOCAT_PROXY{,_PORT} GIT_PROXY_COMMAND
+    unset {http,https,ftp,rsync,socks,all,}_proxy {HTTP,HTTPS,FTP,RSYNC,SOCKS,ALL}_PROXY socat_proxy{,_port} SOCAT_PROXY{,_PORT} GIT_PROXY_COMMAND
 }
 
 # enable proxy env by default.

@@ -38,7 +38,7 @@ proxy () {
 
     # Fetch proxy settings ONCE
     local _scutil_output
-    _scutil_output=$(scutil --proxy)
+    _scutil_output=$(/usr/sbin/scutil --proxy)
     if [[ -z "$_scutil_output" ]]; then
         # echo "Warning: 'scutil --proxy' returned no output." >&2 # Optional warning
         # Ensure proxies are unset if scutil fails or returns empty

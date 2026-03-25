@@ -27,15 +27,14 @@ noproxy () {
     fi
 }
 
-# Sets proxy environment variables based on macOS System Preferences.
-# Priority order: SOCKS > HTTPS > HTTP (skipped when http_only=1)
-# Usage: proxy [quiet_mode] [http_only]
+# Sets HTTP/HTTPS proxy environment variables based on macOS System Preferences.
+# Usage: proxy [quiet_mode]
 #   quiet_mode: 0 = verbose (default), 1 = quiet
-#   http_only:  0 = all protocols (default), 1 = HTTP/HTTPS only (no SOCKS/FTP/socat/git)
+# Use proxy-socks to also enable SOCKS/FTP/socat/git proxy.
 proxy () {
     local SOCAT_PROXY_WRAPPER="${${(%):-%x}:a:h}/socat-wrapper.sh"
     local quiet_mode=${1:-0}
-    local http_only=${2:-0}
+    local http_only=${2:-1}
 
     # Fetch proxy settings ONCE
     local _scutil_output
@@ -192,10 +191,11 @@ proxy () {
     return 0
 }
 
-# Sets only HTTP/HTTPS proxy variables (no SOCKS/FTP/socat/git), useful for
-# tools that don't support SOCKS (e.g. httpx without the socksio package).
-proxy-http () {
-    proxy ${1:-0} 1
+# Sets all proxy variables including SOCKS/FTP/socat/git in addition to HTTP/HTTPS.
+# Usage: proxy-socks [quiet_mode]
+#   quiet_mode: 0 = verbose (default), 1 = quiet
+proxy-socks () {
+    proxy ${1:-0} 0
 }
 
 # enable proxy env by default.

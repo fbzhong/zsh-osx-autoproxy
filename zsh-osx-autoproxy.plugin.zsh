@@ -166,6 +166,11 @@ proxy () {
         if (( ! _primary_set )); then
             export all_proxy="$http_proxy"
             export ALL_PROXY="$all_proxy"
+            export socat_proxy="PROXY:${_http_server}"
+            export socat_proxy_port="proxyport=${_http_port}"
+            export SOCAT_PROXY="${socat_proxy}"
+            export SOCAT_PROXY_PORT="${socat_proxy_port}"
+            [[ -x "$SOCAT_PROXY_WRAPPER" ]] && export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
             _primary_set=1
         fi
     fi

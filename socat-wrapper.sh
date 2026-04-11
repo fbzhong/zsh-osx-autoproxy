@@ -32,6 +32,13 @@ fi
 # --- Check Bypass Conditions ---
 _connect_direct=0
 
+# 0. Check if we're being used as a ProxyJump host (inside an existing SSH connection)
+#    If SSH_CONNECTION is set, we're already in an SSH session, so bypass proxy
+if [[ -n "$SSH_CONNECTION" ]]; then
+    _connect_direct=1
+    # echo "Debug: Detected ProxyJump context (SSH_CONNECTION set). Connecting directly." >&2
+fi
+
 # 1. Check for non-public / internal IPs (connect directly if matched)
 #    Covers standard private, loopback, link-local, CGNAT/mesh ranges for IPv4/IPv6.
 if \

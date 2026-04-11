@@ -28,13 +28,23 @@ noproxy () {
 }
 
 # Sets HTTP/HTTPS proxy environment variables based on macOS System Preferences.
-# Usage: proxy [quiet_mode]
+# Usage: proxy [-d] [quiet_mode]
+#   -d: enable debug logging
 #   quiet_mode: 0 = verbose (default), 1 = quiet
 # Use proxy-socks to also enable SOCKS/FTP/socat/git proxy.
 proxy () {
     local SOCAT_PROXY_WRAPPER="${${(%):-%x}:a:h}/socat-wrapper.sh"
-    local quiet_mode=${1:-0}
-    local http_only=${2:-1}
+    local debug_mode=0
+    local -a _positional=()
+    for arg in "$@"; do
+        if [[ "$arg" == "-d" ]]; then
+            debug_mode=1
+        else
+            _positional+=("$arg")
+        fi
+    done
+    local quiet_mode=${_positional[1]:-0}
+    local http_only=${_positional[2]:-1}
 
     # Fetch proxy settings ONCE
     local _scutil_output
@@ -93,6 +103,14 @@ proxy () {
 
     local _primary_set=0 _rsync_proxy_set=0
 
+    if (( debug_mode )); then
+        echo "[debug] http_only=${http_only}" >&2
+        echo "[debug] socks: enabled=${_socks_enabled} server=${_socks_server} port=${_socks_port}" >&2
+        echo "[debug] https: enabled=${_https_enabled} server=${_https_server} port=${_https_port}" >&2
+        echo "[debug] http:  enabled=${_http_enabled} server=${_http_server} port=${_http_port}" >&2
+        echo "[debug] SOCAT_PROXY_WRAPPER=${SOCAT_PROXY_WRAPPER} executable=$([[ -x "$SOCAT_PROXY_WRAPPER" ]] && echo yes || echo no)" >&2
+    fi
+
     # 1. SOCKS (Highest Priority for all_proxy/socat/git)
     if [[ $_socks_enabled -eq 1 && -n "$_socks_server" && -n "$_socks_port" ]]; then
         export socks_proxy="socks5://${_socks_server}:${_socks_port}"
@@ -130,13 +148,12 @@ proxy () {
         if (( ! _primary_set )); then
             export all_proxy="$https_proxy"
             export ALL_PROXY="$all_proxy"
-            if (( ! http_only )); then
-                export socat_proxy="PROXY:${_https_server}"
-                export socat_proxy_port="proxyport=${_https_port}"
-                export SOCAT_PROXY="${socat_proxy}"
-                export SOCAT_PROXY_PORT="${socat_proxy_port}"
-                [[ -x "$SOCAT_PROXY_WRAPPER" ]] && export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
-            fi
+            export socat_proxy="PROXY:${_https_server}"
+            export socat_proxy_port="proxyport=${_https_port}"
+            export SOCAT_PROXY="${socat_proxy}"
+            export SOCAT_PROXY_PORT="${socat_proxy_port}"
+            [[ -x "$SOCAT_PROXY_WRAPPER" ]] && export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
+            (( debug_mode )) && echo "[debug] HTTPS primary: socat_proxy=${socat_proxy} GIT_PROXY_COMMAND=${GIT_PROXY_COMMAND}" >&2
             _primary_set=1
         fi
     fi
@@ -171,7 +188,10 @@ proxy () {
             export SOCAT_PROXY="${socat_proxy}"
             export SOCAT_PROXY_PORT="${socat_proxy_port}"
             [[ -x "$SOCAT_PROXY_WRAPPER" ]] && export GIT_PROXY_COMMAND="${SOCAT_PROXY_WRAPPER}"
+            (( debug_mode )) && echo "[debug] HTTP primary: socat_proxy=${socat_proxy} GIT_PROXY_COMMAND=${GIT_PROXY_COMMAND}" >&2
             _primary_set=1
+        else
+            (( debug_mode )) && echo "[debug] HTTP: skipping socat (_primary_set=1)" >&2
         fi
     fi
 
@@ -197,10 +217,20 @@ proxy () {
 }
 
 # Sets all proxy variables including SOCKS/FTP/socat/git in addition to HTTP/HTTPS.
-# Usage: proxy-socks [quiet_mode]
+# Usage: proxy-socks [-d] [quiet_mode]
+#   -d: enable debug logging
 #   quiet_mode: 0 = verbose (default), 1 = quiet
 proxy-socks () {
-    proxy ${1:-0} 0
+    local -a _flags=()
+    local -a _positional=()
+    for arg in "$@"; do
+        if [[ "$arg" == "-d" ]]; then
+            _flags+=("-d")
+        else
+            _positional+=("$arg")
+        fi
+    done
+    proxy "${_flags[@]}" ${_positional[1]:-0} 0
 }
 
 # enable proxy env by default.

@@ -34,6 +34,7 @@ noproxy () {
 # Use proxy-socks to also enable SOCKS/FTP/socat/git proxy.
 proxy () {
     local SOCAT_PROXY_WRAPPER="${${(%):-%x}:a:h}/socat-wrapper.sh"
+    local scutil_bin="${AUTOPROXY_SCUTIL_BIN:-/usr/sbin/scutil}"
     local debug_mode=0
     local -a _positional=()
     for arg in "$@"; do
@@ -48,7 +49,7 @@ proxy () {
 
     # Fetch proxy settings ONCE
     local _scutil_output
-    _scutil_output=$(/usr/sbin/scutil --proxy)
+    _scutil_output=$("$scutil_bin" --proxy)
     if [[ -z "$_scutil_output" ]]; then
         return 1
     fi
@@ -94,8 +95,11 @@ proxy () {
         _raw_exceptions=( ${(f)match[1]} )
         local line
         for line in "${_raw_exceptions[@]}"; do
-            line=$(echo "$line" | awk -F ':' '{ idx=index($0,":"); if(idx>0) print substr($0,idx+1) }' | sed 's/^[[:space:]]*//')
-            line=${(LR)line}
+            [[ "$line" =~ '^[[:space:]]*[0-9]+[[:space:]]*:[[:space:]]*(.*)$' ]] || continue
+            line="${match[1]}"
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            line=${(L)line}
             [[ -n "$line" ]] && _clean_exceptions+=("$line")
         done
         _no_proxy_str=${(j:,:)_clean_exceptions}
